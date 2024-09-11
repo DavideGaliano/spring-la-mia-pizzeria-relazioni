@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.lessons.java.model.Pizza;
 import org.lessons.java.repo.PizzaRepository;
+import org.lessons.java.service.OffertaSpecialeService;
+import org.lessons.java.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +25,10 @@ import jakarta.validation.Valid;
 public class PizzaController {
 	
 	@Autowired
-	private PizzaRepository repo;
+    private PizzaService pizzaService;
+
+    @Autowired
+    private OffertaSpecialeService offertaSpecialeService;
 	
 	//READ
 	
@@ -31,9 +36,9 @@ public class PizzaController {
     public String index(@RequestParam(name = "search", required = false) String search, Model model) {
         List<Pizza> pizze;
         if (search != null && !search.isEmpty()) {
-            pizze = repo.findByNameContainingIgnoreCase(search);
+            pizze = pizzaService.findByName(search);
         } else {
-            pizze = repo.findAll();  // Recupera tutte le pizze
+            pizze = pizzaService.findAll();  // Recupera tutte le pizze
         }
         
         model.addAttribute("pizze", pizze);
@@ -47,9 +52,9 @@ public class PizzaController {
     public String indexOrder(@RequestParam(name = "search", required = false) String search, Model model) {
         List<Pizza> pizze;
         if (search != null && !search.isEmpty()) {
-            pizze = repo.findByNameContainingIgnoreCase(search);
+            pizze = pizzaService.findByName(search);
         } else {
-            pizze = repo.findAll();  // Recupera tutte le pizze
+            pizze = pizzaService.findAll();  // Recupera tutte le pizze
         }
         
         model.addAttribute("pizze", pizze);
@@ -61,14 +66,15 @@ public class PizzaController {
 	
 	@GetMapping("/{id}")
 	public String show(@PathVariable("id") Integer id, Model model) {
-		model.addAttribute("pizza", repo.findById(id).get());
+		model.addAttribute("pizza", pizzaService.findById(id));
+		model.addAttribute("offerteSpeciali", pizza.getOfferteSpeciali());
 		return "/pizze/show";
 	}
 	
 	//SHOW PIZZE ORDINE
 	@GetMapping("/index-order/{id}")
 	public String showOrder(@PathVariable("id") Integer id, Model model) {
-		model.addAttribute("pizza", repo.findById(id).get());
+		model.addAttribute("pizza", pizzaService.findById(id));
 		return "/pizze/show-order";
 	}
 	
@@ -86,7 +92,7 @@ public class PizzaController {
 		if(bindingResult.hasErrors()) {
 			return "/pizze/create";
 		}
-		repo.save(formPizza);
+		pizzaService.save(formPizza);
 		
 		return "redirect:/pizze";
 	}
@@ -96,7 +102,7 @@ public class PizzaController {
 	@GetMapping("/edit/{id}")
 	public String edit(@PathVariable("id") Integer id, Model model)
 	{
-		model.addAttribute("pizza", repo.findById(id).get());
+		model.addAttribute("pizza", pizzaService.findById(id));
 		
 		return "/pizze/edit";
 	}
@@ -107,7 +113,7 @@ public class PizzaController {
 		if(bindingResult.hasErrors()) {
 			return "/pizze/edit";
 		}
-		repo.save(formPizza);
+		pizzaService.save(formPizza);
 		
 		return "redirect:/pizze";
 	}
@@ -117,7 +123,7 @@ public class PizzaController {
 	@PostMapping("/delete/{id}")
 	public String delete(@PathVariable("id") Integer id, RedirectAttributes attributes)
 	{
-		repo.deleteById(id);
+		pizzaService.deleteById(id);
 		
 		attributes.addFlashAttribute("successMessage", "Pizza con id " + id + " è stata eliminata");
 		

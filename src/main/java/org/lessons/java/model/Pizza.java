@@ -1,10 +1,14 @@
 package org.lessons.java.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
@@ -33,6 +37,9 @@ public class Pizza {
 	@NotNull
 	@DecimalMin(value = "0.01", message = "Il prezzo deve essere maggiore di zero")
 	private Double prezzo;
+	
+	@OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL)
+	private List<OffertaSpeciale> offerteSpeciali;
 	
 	
 	public Integer getId() {
@@ -65,4 +72,13 @@ public class Pizza {
 	public void setPrezzo(Double prezzo) {
 		this.prezzo = prezzo;
 	}
+	public List<OffertaSpeciale> getOfferteSpeciali() {
+		return offerteSpeciali;
+	}
+	public void setOfferteSpeciali(List<OffertaSpeciale> offerteSpeciali) {
+		this.offerteSpeciali = offerteSpeciali;
+	}
+	
+	
+	
 }
