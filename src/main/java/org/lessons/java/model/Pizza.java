@@ -38,7 +38,7 @@ public class Pizza {
 	@DecimalMin(value = "0.01", message = "Il prezzo deve essere maggiore di zero")
 	private Double prezzo;
 	
-	@OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "pizza", cascade = CascadeType.REMOVE)
 	private List<OffertaSpeciale> offerteSpeciali;
 	
 	
@@ -78,6 +78,11 @@ public class Pizza {
 	public void setOfferteSpeciali(List<OffertaSpeciale> offerteSpeciali) {
 		this.offerteSpeciali = offerteSpeciali;
 	}
+	
+	public void addOffertaSpeciale(OffertaSpeciale offertaSpeciale) {
+        this.offerteSpeciali.add(offertaSpeciale);
+        offertaSpeciale.setPizza(this);  // Imposta la relazione inversa
+    }
 	
 	
 	

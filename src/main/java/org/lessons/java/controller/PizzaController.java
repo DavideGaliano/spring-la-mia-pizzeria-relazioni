@@ -2,6 +2,7 @@ package org.lessons.java.controller;
 
 import java.util.List;
 
+import org.lessons.java.model.OffertaSpeciale;
 import org.lessons.java.model.Pizza;
 import org.lessons.java.repo.PizzaRepository;
 import org.lessons.java.service.OffertaSpecialeService;
@@ -66,10 +67,11 @@ public class PizzaController {
 	
 	@GetMapping("/{id}")
 	public String show(@PathVariable("id") Integer id, Model model) {
-		model.addAttribute("pizza", pizzaService.findById(id));
-		model.addAttribute("offerteSpeciali", pizza.getOfferteSpeciali());
-		return "/pizze/show";
-	}
+        Pizza pizza = pizzaService.findById(id);
+        model.addAttribute("pizza", pizza);
+        model.addAttribute("offerteSpeciali", pizza.getOfferteSpeciali());
+        return "pizze/show";
+    }
 	
 	//SHOW PIZZE ORDINE
 	@GetMapping("/index-order/{id}")
@@ -77,6 +79,47 @@ public class PizzaController {
 		model.addAttribute("pizza", pizzaService.findById(id));
 		return "/pizze/show-order";
 	}
+	
+	// Mostra il form per creare una nuova offerta speciale
+    @GetMapping("/{id}/offerte/create")
+    public String showCreateOffertaForm(@PathVariable("id") Integer pizzaId, Model model) {
+        Pizza pizza = pizzaService.findById(pizzaId);
+        OffertaSpeciale offertaSpeciale = new OffertaSpeciale();
+        offertaSpeciale.setPizza(pizza);
+        model.addAttribute("offertaSpeciale", offertaSpeciale);
+        return "offerte/create";
+    }
+    
+    // Salva una nuova offerta speciale
+    @PostMapping("/{id}/offerte")
+    public String createOfferta(@PathVariable("id") Integer pizzaId, @Valid OffertaSpeciale offertaSpeciale) {
+        Pizza pizza = pizzaService.findById(pizzaId);
+
+        // Aggiunge l'offerta speciale alla lista delle offerte della pizza
+        offertaSpeciale.setPizza(pizza);
+
+        offertaSpecialeService.save(offertaSpeciale);
+        return "redirect:/pizze/" + pizzaId;
+    }
+
+
+    // Modifica un'offerta speciale esistente
+    @GetMapping("/offerte/{offertaId}/edit")
+    public String showEditOffertaForm(@PathVariable("offertaId") Integer offertaId, Model model) {
+        OffertaSpeciale offertaSpeciale = offertaSpecialeService.findById(offertaId);
+        model.addAttribute("offertaSpeciale", offertaSpeciale);
+        return "offerte/edit";
+    }
+
+    @PostMapping("/offerte/{offertaId}/edit")
+    public String updateOfferta(@PathVariable("offertaId") Integer offertaId, @Valid OffertaSpeciale offertaSpeciale) {
+        OffertaSpeciale existingOfferta = offertaSpecialeService.findById(offertaId);
+        existingOfferta.setTitolo(offertaSpeciale.getTitolo());
+        existingOfferta.setDataInizio(offertaSpeciale.getDataInizio());
+        existingOfferta.setDataFine(offertaSpeciale.getDataFine());
+        offertaSpecialeService.save(existingOfferta);
+        return "redirect:/pizze/" + existingOfferta.getPizza().getId();
+    }
 	
 	//CREATE
 	

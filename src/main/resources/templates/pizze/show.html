@@ -25,6 +25,24 @@
 					    <h5 class="card-title">[[${pizza.name}]]</h5>
 					    <p class="card-text">[[${pizza.description}]]</p>
 						<p class="card-text">[[${#numbers.formatCurrency(pizza.prezzo)}]]</p>
+						<h2>Offerte Speciali</h2>
+						    <table>
+						        <tr>
+						            <th>Titolo</th>
+						            <th>Data Inizio</th>
+						            <th>Data Fine</th>
+						            <th>Azioni</th>
+						        </tr>
+						        <tr th:each="offerta : ${offerteSpeciali}">
+						            <td th:text="${offerta.titolo}"></td>
+						            <td th:text="${offerta.dataInizio}"></td>
+						            <td th:text="${offerta.dataFine}"></td>
+						            <td>
+						                <a th:href="@{/pizze/offerte/{offertaId}/edit(offertaId=${offerta.id})}" class="btn btn-secondary">Modifica</a>
+						            </td>
+						        </tr>
+						    </table>
+							<a th:href="@{/pizze/{id}/offerte/create(id=${pizza.id})}" class="btn btn-secondary">Crea nuova offerta speciale</a>
 					    <a th:href="@{/pizze}" class="btn btn-primary">Indietro</a>
 					  </div>
 					</div>
