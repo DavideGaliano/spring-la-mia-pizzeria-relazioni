@@ -2,9 +2,11 @@ package org.lessons.java.controller;
 
 import java.util.List;
 
+import org.lessons.java.model.Ingrediente;
 import org.lessons.java.model.OffertaSpeciale;
 import org.lessons.java.model.Pizza;
 import org.lessons.java.repo.PizzaRepository;
+import org.lessons.java.service.IngredienteService;
 import org.lessons.java.service.OffertaSpecialeService;
 import org.lessons.java.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class PizzaController {
 
     @Autowired
     private OffertaSpecialeService offertaSpecialeService;
+    
+    @Autowired
+    private IngredienteService ingredienteService;
 	
 	//READ
 	
@@ -70,6 +75,7 @@ public class PizzaController {
         Pizza pizza = pizzaService.findById(id);
         model.addAttribute("pizza", pizza);
         model.addAttribute("offerteSpeciali", pizza.getOfferteSpeciali());
+        model.addAttribute("ingredienti", pizza.getIngredienti());
         return "pizze/show";
     }
 	
@@ -79,16 +85,6 @@ public class PizzaController {
 		model.addAttribute("pizza", pizzaService.findById(id));
 		return "/pizze/show-order";
 	}
-	
-	// Mostra il form per creare una nuova offerta speciale
-    @GetMapping("/{id}/offerte/create")
-    public String showCreateOffertaForm(@PathVariable("id") Integer pizzaId, Model model) {
-        Pizza pizza = pizzaService.findById(pizzaId);
-        OffertaSpeciale offertaSpeciale = new OffertaSpeciale();
-        offertaSpeciale.setPizza(pizza);
-        model.addAttribute("offertaSpeciale", offertaSpeciale);
-        return "offerte/create";
-    }
     
     // Salva una nuova offerta speciale
     @PostMapping("/{id}/offerte")
@@ -125,16 +121,21 @@ public class PizzaController {
 	
 	@GetMapping("/create")
 	public String create(Model model) {
+		List<Ingrediente> ingredienti = ingredienteService.findAll();
+		model.addAttribute("ingredienti", ingredienti);
 		model.addAttribute("pizza", new Pizza());
 		return "/pizze/create";
+		
 	}
 	
 	@PostMapping("/create")
-	public String store(@Valid @ModelAttribute("pizza") Pizza formPizza ,BindingResult bindingResult, Model model)
+	public String store(@Valid @ModelAttribute("pizza") Pizza formPizza ,@RequestParam("ingredienti") List<Integer> ingredientiId, BindingResult bindingResult, Model model)
 	{
 		if(bindingResult.hasErrors()) {
 			return "/pizze/create";
 		}
+		 List<Ingrediente> ingredienti = ingredienteService.findAllById(ingredientiId);
+		 formPizza.setIngredienti(ingredienti);
 		pizzaService.save(formPizza);
 		
 		return "redirect:/pizze";

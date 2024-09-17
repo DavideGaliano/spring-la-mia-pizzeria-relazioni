@@ -50,6 +50,14 @@
 						<input type="number" step="0.01" class="form-control" id="price" aria-describedby="pizzaPrice" th:field="*{prezzo}">
 						<div class="text-danger" th:if="${#fields.hasErrors('prezzo')}" th:errors="*{prezzo}"></div>
 					</div>
+					<!-- Lista degli ingredienti -->
+					        <div class="mb-3">
+					            <h3>Seleziona Ingredienti</h3>
+					            <div th:each="ingrediente : ${ingredienti}">
+					                <input type="checkbox" th:field="*{ingredienti}" th:value="${ingrediente.id}">
+					                <span th:text="${ingrediente.nome}"></span>
+					            </div>
+					        </div>
 					<div class="d-flex justify-content-between">
 						
 						<input type="submit" class="btn btn-primary btn-lg" value="Aggiorna">

@@ -20,13 +20,22 @@
 				</h1>
 				<th:block>
 					<div class="card" >
+						<th:block th:unless="${pizza.url}">
 					  <img th:src="${pizza.url}" class="card-img-top" alt="${pizza.name}">
+					  </th:block>
 					  <div class="card-body">
 					    <h5 class="card-title">[[${pizza.name}]]</h5>
 					    <p class="card-text">[[${pizza.description}]]</p>
+						<h6 class="card-text">Ingredienti</h6>
+						<ul>
+							<th:block th:each="ingrediente : ${ingredienti}">
+							<li th:text="${ingrediente.nome}" ></li>
+							</th:block>
+						</ul>
 						<p class="card-text">[[${#numbers.formatCurrency(pizza.prezzo)}]]</p>
 						<h2>Offerte Speciali</h2>
-						    <table>
+						<th:block th:if="${offerteSpeciali.size > 0}">
+						    <table class="table">
 						        <tr>
 						            <th>Titolo</th>
 						            <th>Data Inizio</th>
@@ -41,8 +50,9 @@
 						                <a th:href="@{/pizze/offerte/{offertaId}/edit(offertaId=${offerta.id})}" class="btn btn-secondary">Modifica</a>
 						            </td>
 						        </tr>
-						    </table>
-							<a th:href="@{/pizze/{id}/offerte/create(id=${pizza.id})}" class="btn btn-secondary">Crea nuova offerta speciale</a>
+						    </table>					
+					</th:block>
+							<a th:href="@{/offerte/create}" class="btn btn-secondary">Crea nuova offerta speciale</a>
 					    <a th:href="@{/pizze}" class="btn btn-primary">Indietro</a>
 					  </div>
 					</div>

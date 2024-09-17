@@ -8,8 +8,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +44,21 @@ public class Pizza {
 	@OneToMany(mappedBy = "pizza", cascade = CascadeType.REMOVE)
 	private List<OffertaSpeciale> offerteSpeciali;
 	
+	@ManyToMany
+    @JoinTable(
+        name = "pizza_ingrediente",
+        joinColumns = @JoinColumn(name = "pizza_id"),
+        inverseJoinColumns = @JoinColumn(name = "ingrediente_id")
+    )
+    private List<Ingrediente> ingredienti;
 	
+	
+	public List<Ingrediente> getIngredienti() {
+		return ingredienti;
+	}
+	public void setIngredienti(List<Ingrediente> ingredienti) {
+		this.ingredienti = ingredienti;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -78,11 +95,6 @@ public class Pizza {
 	public void setOfferteSpeciali(List<OffertaSpeciale> offerteSpeciali) {
 		this.offerteSpeciali = offerteSpeciali;
 	}
-	
-	public void addOffertaSpeciale(OffertaSpeciale offertaSpeciale) {
-        this.offerteSpeciali.add(offertaSpeciale);
-        offertaSpeciale.setPizza(this);  // Imposta la relazione inversa
-    }
 	
 	
 	
