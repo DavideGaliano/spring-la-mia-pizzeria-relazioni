@@ -5,7 +5,9 @@ import java.util.List;
 import org.lessons.java.model.Ingrediente;
 import org.lessons.java.model.OffertaSpeciale;
 import org.lessons.java.model.Pizza;
+import org.lessons.java.model.User;
 import org.lessons.java.repo.PizzaRepository;
+import org.lessons.java.service.CarrelloService;
 import org.lessons.java.service.IngredienteService;
 import org.lessons.java.service.OffertaSpecialeService;
 import org.lessons.java.service.PizzaService;
@@ -35,6 +37,9 @@ public class PizzaController {
     
     @Autowired
     private IngredienteService ingredienteService;
+    
+    @Autowired
+    private CarrelloService carrelloService;
 	
 	//READ
 	
@@ -67,6 +72,15 @@ public class PizzaController {
         model.addAttribute("search", search);  // Mantieni il valore di ricerca nel modello
         
         return "/pizze/index-order";
+    }
+	
+	// Aggiungi la pizza al carrello
+    @PostMapping("/add-to-cart/{id}")
+    public String addToCart(@PathVariable("id") Integer pizzaId, Model model, User user) {
+        Pizza pizza = pizzaService.findById(pizzaId);
+        carrelloService.addPizzaToCarrello(user, pizza);
+        model.addAttribute("successMessage", "Pizza aggiunta al carrello con successo!");
+        return "redirect:/pizze";
     }
 
 	
